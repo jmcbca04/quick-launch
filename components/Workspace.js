@@ -224,16 +224,21 @@ export default function Workspace() {
         // Convert to base64 with compression
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
 
-        setPageData(prev => ({
-          ...prev,
-          [section]: {
-            ...prev[section],
-            image: {
-              ...prev[section].image,
-              data: compressedBase64
+        setPageData(prev => {
+          const newData = {
+            ...prev,
+            [section]: {
+              ...prev[section],
+              image: {
+                ...prev[section].image,
+                data: compressedBase64
+              }
             }
-          }
-        }));
+          };
+          // Save to localStorage after updating state
+          localStorage.setItem('pageData', JSON.stringify(newData));
+          return newData;
+        });
 
         // Show warning for large files
         if (file.size > 1024 * 1024) {
@@ -251,43 +256,55 @@ export default function Workspace() {
   };
 
   const handleImagePositionChange = (position, section = 'hero') => {
-    setPageData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        image: {
-          ...prev[section].image,
-          position
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          image: {
+            ...prev[section].image,
+            position
+          }
         }
-      }
-    }));
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handleImageAltChange = (alt, section = 'hero') => {
-    setPageData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        image: {
-          ...prev[section].image,
-          alt
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          image: {
+            ...prev[section].image,
+            alt
+          }
         }
-      }
-    }));
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const removeImage = (section = 'hero') => {
-    setPageData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        image: {
-          data: null,
-          alt: '',
-          position: 'right'
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          image: {
+            data: null,
+            alt: '',
+            position: 'right'
+          }
         }
-      }
-    }));
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
     setImageError('');
   };
 
