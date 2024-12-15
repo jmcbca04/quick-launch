@@ -12,8 +12,74 @@ export default function MainLayout({ children }) {
     
     try {
       // Get the current page data from localStorage
-      const pageData = JSON.parse(localStorage.getItem('pageData'));
+      const rawPageData = localStorage.getItem('pageData');
+      if (!rawPageData) {
+        throw new Error('No page data found');
+      }
+
+      const pageData = JSON.parse(rawPageData);
+      if (!pageData.template) {
+        throw new Error('No template selected');
+      }
+
+      // Function to compress image data further if needed
+      const compressImageData = async (imageData) => {
+        if (!imageData) return null;
+        
+        // Create an image element
+        const img = new Image();
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = imageData;
+        });
+
+        // Create a canvas
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions (max 600px for export)
+        const maxDimension = 600;
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress the image
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to base64 with higher compression for export
+        return canvas.toDataURL('image/jpeg', 0.6);
+      };
+
+      // Compress images in the page data
+      const compressedPageData = { ...pageData };
       
+      // Compress hero image if exists
+      if (pageData?.hero?.image?.data) {
+        compressedPageData.hero.image.data = await compressImageData(pageData.hero.image.data);
+      }
+      
+      // Compress signup image if exists
+      if (pageData?.signup?.image?.data) {
+        compressedPageData.signup.image.data = await compressImageData(pageData.signup.image.data);
+      }
+      
+      // Compress coming soon image if exists
+      if (pageData?.comingSoon?.image?.data) {
+        compressedPageData.comingSoon.image.data = await compressImageData(pageData.comingSoon.image.data);
+      }
+
       // Generate the HTML content
       const htmlContent = `
 <!DOCTYPE html>
@@ -393,7 +459,7 @@ export default function MainLayout({ children }) {
       }, 5000);
     } catch (error) {
       console.error('Export failed:', error);
-      // Show error message
+      // Show error message with more details
       const toast = document.createElement('div');
       toast.style.cssText = `
         position: fixed;
@@ -407,7 +473,7 @@ export default function MainLayout({ children }) {
         z-index: 50;
         animation: slideIn 0.3s ease-out;
       `;
-      toast.textContent = 'Export failed. Please try again.';
+      toast.textContent = `Export failed: ${error.message}`;
       document.body.appendChild(toast);
 
       setTimeout(() => {
