@@ -4,23 +4,22 @@ import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    setTheme(document.documentElement.getAttribute('data-theme') || 'light');
   }, []);
 
   const toggleTheme = () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
   };
 
   if (!mounted) {
-    return null;
+    return <div className="w-10 h-10" />; // Placeholder with same dimensions
   }
 
   return (
@@ -28,8 +27,7 @@ export default function ThemeToggle() {
       <input 
         type="checkbox" 
         onChange={toggleTheme} 
-        className="theme-controller"
-        checked={document.documentElement.getAttribute('data-theme') === 'dark'}
+        checked={theme === 'dark'}
       />
       {/* sun icon */}
       <svg className="swap-on fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
