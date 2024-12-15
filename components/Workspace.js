@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const TEMPLATES = {
   FULL_LANDING: 'Full Landing Page',
@@ -68,45 +68,68 @@ export default function Workspace() {
   const [previewMode, setPreviewMode] = useState('desktop');
   const [pageData, setPageData] = useState(DEFAULT_STATE);
 
+  useEffect(() => {
+    const savedData = localStorage.getItem('pageData');
+    if (savedData) {
+      setPageData(JSON.parse(savedData));
+    }
+  }, []);
+
   const handleInputChange = (section, field, value) => {
-    setPageData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: value
+        }
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handleTemplateChange = (template) => {
-    setPageData(prev => ({
-      ...prev,
-      template
-    }));
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        template
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handlePointChange = (section, index, field, value) => {
-    setPageData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        points: prev[section].points.map((point, i) => 
-          i === index ? { ...point, [field]: value } : point
-        )
-      }
-    }));
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          points: prev[section].points.map((point, i) => 
+            i === index ? { ...point, [field]: value } : point
+          )
+        }
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handleFeatureChange = (index, field, value) => {
-    setPageData(prev => ({
-      ...prev,
-      features: {
-        ...prev.features,
-        items: prev.features.items.map((item, i) => 
-          i === index ? { ...item, [field]: value } : item
-        )
-      }
-    }));
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        features: {
+          ...prev.features,
+          items: prev.features.items.map((item, i) => 
+            i === index ? { ...item, [field]: value } : item
+          )
+        }
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handlePreviewClick = () => {
@@ -115,16 +138,20 @@ export default function Workspace() {
   };
 
   const handleColorChange = (colorKey, value) => {
-    setPageData(prev => ({
-      ...prev,
-      styles: {
-        ...prev.styles,
-        colors: {
-          ...prev.styles.colors,
-          [colorKey]: value
+    setPageData(prev => {
+      const newData = {
+        ...prev,
+        styles: {
+          ...prev.styles,
+          colors: {
+            ...prev.styles.colors,
+            [colorKey]: value
+          }
         }
-      }
-    }));
+      };
+      localStorage.setItem('pageData', JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const getPreviewStyle = () => ({
