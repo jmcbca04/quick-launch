@@ -4,6 +4,67 @@ import Link from 'next/link';
 import { useState } from 'react';
 import JSZip from 'jszip';
 
+const DEFAULT_STATE = {
+  template: 'Full Landing Page',
+  styles: {
+    colors: {
+      primary: '#171717',
+      background: '#ffffff',
+      text: '#171717',
+      accent: '#f5f5f5'
+    }
+  },
+  hero: {
+    headline: '',
+    subheading: '',
+    buttonText: '',
+    image: {
+      data: null,
+      alt: '',
+      position: 'right'
+    }
+  },
+  problem: {
+    title: '',
+    description: '',
+    points: [
+      { title: '', description: '' },
+      { title: '', description: '' },
+      { title: '', description: '' },
+    ]
+  },
+  features: {
+    title: '',
+    description: '',
+    items: [
+      { title: '', description: '' },
+      { title: '', description: '' },
+      { title: '', description: '' },
+    ]
+  },
+  cta: {
+    headline: '',
+    subheading: '',
+    buttonText: '',
+  },
+  signup: {
+    headline: '',
+    subheading: '',
+    buttonText: '',
+    emailPlaceholder: 'Enter your email',
+    namePlaceholder: 'Enter your name',
+    successMessage: 'Thanks for signing up!',
+  },
+  comingSoon: {
+    headline: '',
+    subheading: '',
+    launchDate: '',
+    emailPlaceholder: 'Enter your email to get notified',
+    buttonText: 'Notify Me',
+    successMessage: "Thanks! We'll let you know when we launch.",
+  }
+};
+
 export default function MainLayout({ children }) {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -11,13 +72,15 @@ export default function MainLayout({ children }) {
     setIsExporting(true);
     
     try {
-      // Get the current page data from localStorage
+      // Get the current page data from localStorage or use default state
       const rawPageData = localStorage.getItem('pageData');
-      if (!rawPageData) {
-        throw new Error('No page data found');
+      const pageData = rawPageData ? JSON.parse(rawPageData) : DEFAULT_STATE;
+
+      // Validate the data
+      if (!pageData || typeof pageData !== 'object') {
+        throw new Error('Invalid page data');
       }
 
-      const pageData = JSON.parse(rawPageData);
       if (!pageData.template) {
         throw new Error('No template selected');
       }
