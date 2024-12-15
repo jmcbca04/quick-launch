@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function MainLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
@@ -5,7 +7,9 @@ export default function MainLayout({ children }) {
       <header className="border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold">QuickLaunch</h1>
+            <Link href="/" className="text-xl font-semibold hover:opacity-80 transition-opacity">
+              QuickLaunch
+            </Link>
             <div className="h-6 w-px bg-gray-200"></div>
             <button className="btn btn-sm btn-ghost">Save</button>
             <button className="btn btn-sm btn-ghost">Preview</button>
