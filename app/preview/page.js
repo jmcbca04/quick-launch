@@ -1,8 +1,9 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function PreviewPage() {
+function PreviewContent() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get('data');
   const pageData = encodedData ? JSON.parse(decodeURIComponent(encodedData)) : null;
@@ -250,5 +251,13 @@ export default function PreviewPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={<div>Loading preview...</div>}>
+      <PreviewContent />
+    </Suspense>
   );
 } 
