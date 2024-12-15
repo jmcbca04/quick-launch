@@ -166,7 +166,7 @@ export default function Workspace() {
   return (
     <div className="grid grid-cols-2 gap-0 h-[calc(100vh-4rem)]">
       {/* Editor Panel */}
-      <div className="bg-base-100 border-r overflow-hidden flex flex-col">
+      <div className="bg-base-100 border-r overflow-hidden flex flex-col" style={getPreviewStyle()}>
         <div className="border-b px-4 h-14 flex items-center justify-between">
           <h2 className="font-medium">Editor</h2>
           <button className="btn btn-sm">
