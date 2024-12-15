@@ -1,8 +1,9 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function PreviewPage() {
+function PreviewContent() {
   const searchParams = useSearchParams();
   const data = searchParams.get('data');
   let pageData;
@@ -116,5 +117,21 @@ export default function PreviewPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function LoadingPreview() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={<LoadingPreview />}>
+      <PreviewContent />
+    </Suspense>
   );
 } 
