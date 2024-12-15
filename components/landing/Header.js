@@ -1,5 +1,3 @@
-import ThemeToggle from '../ThemeToggle';
-
 export default function Header() {
   return (
     <header className="border-b bg-base-100">
@@ -14,7 +12,6 @@ export default function Header() {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             <a href="/builder" className="btn btn-primary btn-sm">Get Started</a>
           </div>
         </div>
