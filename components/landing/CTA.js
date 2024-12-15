@@ -10,10 +10,10 @@ export default function CTA() {
             Join thousands of makers and entrepreneurs who are already using QuickLaunch to grow their projects.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/builder" className="btn btn-lg bg-white text-primary hover:bg-gray-100">
+            <a href="/builder" className="btn btn-lg bg-base-100 hover:bg-base-200 text-base-content border-0">
               Start Building Now
             </a>
-            <a href="#pricing" className="btn btn-lg btn-outline border-2 border-white text-white hover:bg-white hover:text-primary">
+            <a href="#pricing" className="btn btn-lg btn-outline border-2 border-base-100 text-base-100 hover:bg-base-100 hover:text-base-content">
               View Pricing
             </a>
           </div>
