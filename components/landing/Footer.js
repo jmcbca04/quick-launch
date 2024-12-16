@@ -9,7 +9,7 @@ export default function Footer() {
               <li><a href="#features" className="text-base-content/80 hover:text-primary">Features</a></li>
               <li><a href="#pricing" className="text-base-content/80 hover:text-primary">Pricing</a></li>
               <li><a href="/builder" className="text-base-content/80 hover:text-primary">Builder</a></li>
-              <li><a href="#templates" className="text-base-content/80 hover:text-primary">Templates</a></li>
+              <li><a href="/templates" className="text-base-content/80 hover:text-primary">Templates</a></li>
             </ul>
           </div>
 
