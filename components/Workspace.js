@@ -18,6 +18,12 @@ const DEFAULT_STATE = {
       accent: '#f5f5f5'
     }
   },
+  form: {
+    enabled: false,
+    embedCode: '',
+    title: 'Contact Us',
+    description: 'Fill out this form to get in touch.',
+  },
   hero: {
     headline: '',
     subheading: '',
@@ -77,7 +83,16 @@ export default function Workspace() {
   useEffect(() => {
     const savedData = localStorage.getItem('pageData');
     if (savedData) {
-      setPageData(JSON.parse(savedData));
+      const parsedData = JSON.parse(savedData);
+      // Ensure form data exists by merging with default state
+      setPageData({
+        ...DEFAULT_STATE,
+        ...parsedData,
+        form: {
+          ...DEFAULT_STATE.form,
+          ...(parsedData.form || {})
+        }
+      });
     }
   }, []);
 
@@ -310,6 +325,18 @@ export default function Workspace() {
 
   return (
     <div className="grid grid-cols-2 gap-0 h-[calc(100vh-4rem)]">
+      <style jsx global>{`
+        .form-container {
+          width: 100%;
+          min-height: 400px;
+        }
+        .form-container iframe {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 400px;
+          border: none !important;
+        }
+      `}</style>
       {/* Editor Panel */}
       <div className="bg-base-100 border-r overflow-hidden flex flex-col">
         <div className="border-b px-4 h-14 flex items-center justify-between">
@@ -420,6 +447,75 @@ export default function Workspace() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Form Settings */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-base-content">Form Settings</h3>
+                <div className="form-control">
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-2">Enable Form</span>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={pageData.form.enabled}
+                      onChange={(e) => handleInputChange('form', 'enabled', e.target.checked)}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {pageData.form.enabled && (
+                <div className="space-y-4">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-base-content">Form Title</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={pageData.form.title}
+                      onChange={(e) => handleInputChange('form', 'title', e.target.value)}
+                      placeholder="Enter form section title"
+                      className="input input-bordered text-base-content bg-base-100"
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-base-content">Form Description</span>
+                    </label>
+                    <textarea
+                      value={pageData.form.description}
+                      onChange={(e) => handleInputChange('form', 'description', e.target.value)}
+                      placeholder="Enter form section description"
+                      className="textarea textarea-bordered h-20 text-base-content bg-base-100"
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text text-base-content">Google Form Embed Code</span>
+                      <span className="label-text-alt">
+                        <a
+                          href="https://support.google.com/docs/answer/2839588?hl=en"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link link-primary"
+                        >
+                          How to get embed code
+                        </a>
+                      </span>
+                    </label>
+                    <textarea
+                      value={pageData.form.embedCode}
+                      onChange={(e) => handleInputChange('form', 'embedCode', e.target.value)}
+                      placeholder='Paste your Google Form embed code here (e.g., <iframe src="https://docs.google.com/forms/d/e...">'
+                      className="textarea textarea-bordered h-32 text-base-content bg-base-100 font-mono text-sm"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Template-specific sections */}
@@ -685,10 +781,48 @@ export default function Workspace() {
                 </div>
 
                 {/* CTA Section */}
+                <section
+                  className="py-20"
+                  style={{
+                    backgroundColor: pageData.styles.colors.primary,
+                    color: pageData.styles.colors.background
+                  }}
+                >
+                  <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto text-center">
+                      <h2 className={`font-bold mb-6 ${previewMode === 'mobile' ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
+                        {pageData.cta.headline || 'Ready to Get Started?'}
+                      </h2>
+                      <p className={`mb-8 opacity-90 ${previewMode === 'mobile' ? 'text-lg' : 'text-xl'}`}>
+                        {pageData.cta.subheading || 'Take the next step and join thousands of satisfied customers.'}
+                      </p>
+                      <div
+                        className="rounded-lg shadow-lg p-6"
+                        style={{ backgroundColor: pageData.styles.colors.accent }}
+                      >
+                        {pageData.form.enabled && pageData.form.embedCode ? (
+                          <div 
+                            className="form-container"
+                            dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                          />
+                        ) : (
+                          <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                            <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </>
+            )}
+
+            {pageData.template === TEMPLATES.SIGNUP_FOCUS && (
+              <>
+                {/* Sign-up Page Settings */}
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-base-content">CTA Section</h3>
-                    <button className="btn btn-sm btn-ghost">Hide Section</button>
+                    <h3 className="text-lg font-semibold text-base-content">Sign-up Page</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="form-control">
@@ -697,9 +831,9 @@ export default function Workspace() {
                       </label>
                       <input
                         type="text"
-                        value={pageData.cta.headline}
-                        onChange={(e) => handleInputChange('cta', 'headline', e.target.value)}
-                        placeholder="Enter CTA headline"
+                        value={pageData.signup.headline}
+                        onChange={(e) => handleInputChange('signup', 'headline', e.target.value)}
+                        placeholder="Enter your headline"
                         className="input input-bordered text-base-content bg-base-100"
                       />
                     </div>
@@ -709,10 +843,160 @@ export default function Workspace() {
                         <span className="label-text text-base-content">Subheading</span>
                       </label>
                       <textarea
-                        value={pageData.cta.subheading}
-                        onChange={(e) => handleInputChange('cta', 'subheading', e.target.value)}
-                        placeholder="Enter CTA subheading"
-                        className="textarea textarea-bordered h-20 text-base-content bg-base-100"
+                        value={pageData.signup.subheading}
+                        onChange={(e) => handleInputChange('signup', 'subheading', e.target.value)}
+                        placeholder="Enter your subheading"
+                        className="textarea textarea-bordered h-24 text-base-content bg-base-100"
+                      />
+                    </div>
+
+                    {/* Image Upload Section */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">Brand Image</span>
+                      </label>
+                      <div className="space-y-4">
+                        {pageData?.signup?.image?.data ? (
+                          <div className="space-y-4">
+                            <div className="relative aspect-video rounded-lg overflow-hidden bg-base-200">
+                              <img
+                                src={pageData?.signup?.image?.data}
+                                alt="Preview"
+                                className="object-contain w-full h-full"
+                              />
+                              <button
+                                onClick={() => removeImage('signup')}
+                                className="absolute top-2 right-2 btn btn-sm btn-circle btn-error"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="form-control">
+                                <label className="label">
+                                  <span className="label-text">Alt Text</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={pageData?.signup?.image?.alt || ''}
+                                  onChange={(e) => handleImageAltChange(e.target.value, 'signup')}
+                                  placeholder="Describe the image for accessibility"
+                                  className="input input-bordered"
+                                />
+                              </div>
+                              <div className="form-control">
+                                <label className="label">
+                                  <span className="label-text">Position</span>
+                                </label>
+                                <div className="join">
+                                  <button
+                                    className={`join-item btn btn-sm ${pageData?.signup?.image?.position === 'left' ? 'btn-primary' : 'btn-ghost'}`}
+                                    onClick={() => handleImagePositionChange('left', 'signup')}
+                                  >
+                                    Left
+                                  </button>
+                                  <button
+                                    className={`join-item btn btn-sm ${pageData?.signup?.image?.position === 'right' ? 'btn-primary' : 'btn-ghost'}`}
+                                    onClick={() => handleImagePositionChange('right', 'signup')}
+                                  >
+                                    Right
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-4">
+                            <label className="w-full">
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={(e) => handleImageUpload(e, 'signup')}
+                                className="hidden"
+                              />
+                              <div className="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
+                                <div className="mb-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                </div>
+                                <p className="text-sm opacity-50">
+                                  Click to upload image<br />
+                                  <span className="text-xs">JPG, PNG, WebP (max 2MB)</span>
+                                </p>
+                              </div>
+                            </label>
+                          </div>
+                        )}
+                        {imageError && (
+                          <div className={`text-sm ${imageError.startsWith('Warning') ? 'text-warning' : 'text-error'}`}>
+                            {imageError}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {pageData.template === TEMPLATES.COMING_SOON && (
+              <>
+                {/* Coming Soon Page Settings */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-base-content">Coming Soon Page</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text text-base-content">Headline</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={pageData.comingSoon.headline}
+                        onChange={(e) => handleInputChange('comingSoon', 'headline', e.target.value)}
+                        placeholder="Enter your headline"
+                        className="input input-bordered text-base-content bg-base-100"
+                      />
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text text-base-content">Subheading</span>
+                      </label>
+                      <textarea
+                        value={pageData.comingSoon.subheading}
+                        onChange={(e) => handleInputChange('comingSoon', 'subheading', e.target.value)}
+                        placeholder="Enter your subheading"
+                        className="textarea textarea-bordered h-24 text-base-content bg-base-100"
+                      />
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text text-base-content">Launch Date</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={pageData.comingSoon.launchDate}
+                        onChange={(e) => handleInputChange('comingSoon', 'launchDate', e.target.value)}
+                        className="input input-bordered text-base-content bg-base-100"
+                      />
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text text-base-content">Email Placeholder</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={pageData.comingSoon.emailPlaceholder}
+                        onChange={(e) => handleInputChange('comingSoon', 'emailPlaceholder', e.target.value)}
+                        placeholder="Email field placeholder"
+                        className="input input-bordered text-base-content bg-base-100"
                       />
                     </div>
 
@@ -722,362 +1006,103 @@ export default function Workspace() {
                       </label>
                       <input
                         type="text"
-                        value={pageData.cta.buttonText}
-                        onChange={(e) => handleInputChange('cta', 'buttonText', e.target.value)}
+                        value={pageData.comingSoon.buttonText}
+                        onChange={(e) => handleInputChange('comingSoon', 'buttonText', e.target.value)}
                         placeholder="Enter button text"
                         className="input input-bordered text-base-content bg-base-100"
                       />
                     </div>
+
+                    {/* Image Upload Section */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text">Brand Image</span>
+                      </label>
+                      <div className="space-y-4">
+                        {pageData?.comingSoon?.image?.data ? (
+                          <div className="space-y-4">
+                            <div className="relative aspect-video rounded-lg overflow-hidden bg-base-200">
+                              <img
+                                src={pageData?.comingSoon?.image?.data}
+                                alt="Preview"
+                                className="object-contain w-full h-full"
+                              />
+                              <button
+                                onClick={() => removeImage('comingSoon')}
+                                className="absolute top-2 right-2 btn btn-sm btn-circle btn-error"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="form-control">
+                                <label className="label">
+                                  <span className="label-text">Alt Text</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={pageData?.comingSoon?.image?.alt || ''}
+                                  onChange={(e) => handleImageAltChange(e.target.value, 'comingSoon')}
+                                  placeholder="Describe the image for accessibility"
+                                  className="input input-bordered"
+                                />
+                              </div>
+                              <div className="form-control">
+                                <label className="label">
+                                  <span className="label-text">Position</span>
+                                </label>
+                                <div className="join">
+                                  <button
+                                    className={`join-item btn btn-sm ${pageData?.comingSoon?.image?.position === 'left' ? 'btn-primary' : 'btn-ghost'}`}
+                                    onClick={() => handleImagePositionChange('left', 'comingSoon')}
+                                  >
+                                    Left
+                                  </button>
+                                  <button
+                                    className={`join-item btn btn-sm ${pageData?.comingSoon?.image?.position === 'right' ? 'btn-primary' : 'btn-ghost'}`}
+                                    onClick={() => handleImagePositionChange('right', 'comingSoon')}
+                                  >
+                                    Right
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-4">
+                            <label className="w-full">
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={(e) => handleImageUpload(e, 'comingSoon')}
+                                className="hidden"
+                              />
+                              <div className="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
+                                <div className="mb-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                </div>
+                                <p className="text-sm opacity-50">
+                                  Click to upload image<br />
+                                  <span className="text-xs">JPG, PNG, WebP (max 2MB)</span>
+                                </p>
+                              </div>
+                            </label>
+                          </div>
+                        )}
+                        {imageError && (
+                          <div className={`text-sm ${imageError.startsWith('Warning') ? 'text-warning' : 'text-error'}`}>
+                            {imageError}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </>
-            )}
-
-            {pageData.template === TEMPLATES.SIGNUP_FOCUS && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-base-content">Sign-up Page</h3>
-                </div>
-                <div className="space-y-4">
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Headline</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.signup.headline}
-                      onChange={(e) => handleInputChange('signup', 'headline', e.target.value)}
-                      placeholder="Enter your headline"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Subheading</span>
-                    </label>
-                    <textarea
-                      value={pageData.signup.subheading}
-                      onChange={(e) => handleInputChange('signup', 'subheading', e.target.value)}
-                      placeholder="Enter your subheading"
-                      className="textarea textarea-bordered h-24 text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Button Text</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.signup.buttonText}
-                      onChange={(e) => handleInputChange('signup', 'buttonText', e.target.value)}
-                      placeholder="Enter button text"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Email Placeholder</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.signup.emailPlaceholder}
-                      onChange={(e) => handleInputChange('signup', 'emailPlaceholder', e.target.value)}
-                      placeholder="Email field placeholder"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Name Placeholder</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.signup.namePlaceholder}
-                      onChange={(e) => handleInputChange('signup', 'namePlaceholder', e.target.value)}
-                      placeholder="Name field placeholder"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Success Message</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.signup.successMessage}
-                      onChange={(e) => handleInputChange('signup', 'successMessage', e.target.value)}
-                      placeholder="Message shown after successful signup"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  {/* Image Upload Section */}
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">Brand Image</span>
-                    </label>
-                    <div className="space-y-4">
-                      {pageData?.signup?.image?.data ? (
-                        <div className="space-y-4">
-                          <div className="relative aspect-video rounded-lg overflow-hidden bg-base-200">
-                            <img
-                              src={pageData?.signup?.image?.data}
-                              alt="Preview"
-                              className="object-contain w-full h-full"
-                            />
-                            <button
-                              onClick={() => removeImage('signup')}
-                              className="absolute top-2 right-2 btn btn-sm btn-circle btn-error"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="form-control">
-                              <label className="label">
-                                <span className="label-text">Alt Text</span>
-                              </label>
-                              <input
-                                type="text"
-                                value={pageData?.signup?.image?.alt || ''}
-                                onChange={(e) => handleImageAltChange(e.target.value, 'signup')}
-                                placeholder="Describe the image for accessibility"
-                                className="input input-bordered"
-                              />
-                            </div>
-                            <div className="form-control">
-                              <label className="label">
-                                <span className="label-text">Position</span>
-                              </label>
-                              <div className="join">
-                                <button
-                                  className={`join-item btn btn-sm ${pageData?.signup?.image?.position === 'left' ? 'btn-primary' : 'btn-ghost'}`}
-                                  onClick={() => handleImagePositionChange('left', 'signup')}
-                                >
-                                  Left
-                                </button>
-                                <button
-                                  className={`join-item btn btn-sm ${pageData?.signup?.image?.position === 'right' ? 'btn-primary' : 'btn-ghost'}`}
-                                  onClick={() => handleImagePositionChange('right', 'signup')}
-                                >
-                                  Right
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-4">
-                          <label className="w-full">
-                            <input
-                              type="file"
-                              accept="image/jpeg,image/png,image/webp"
-                              onChange={(e) => handleImageUpload(e, 'signup')}
-                              className="hidden"
-                            />
-                            <div className="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
-                              <div className="mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                              </div>
-                              <p className="text-sm opacity-50">
-                                Click to upload image<br />
-                                <span className="text-xs">JPG, PNG, WebP (max 2MB)</span>
-                              </p>
-                            </div>
-                          </label>
-                        </div>
-                      )}
-                      {imageError && (
-                        <div className={`text-sm ${imageError.startsWith('Warning') ? 'text-warning' : 'text-error'}`}>
-                          {imageError}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {pageData.template === TEMPLATES.COMING_SOON && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-base-content">Coming Soon Page</h3>
-                </div>
-                <div className="space-y-4">
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Headline</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.comingSoon.headline}
-                      onChange={(e) => handleInputChange('comingSoon', 'headline', e.target.value)}
-                      placeholder="Enter your headline"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Subheading</span>
-                    </label>
-                    <textarea
-                      value={pageData.comingSoon.subheading}
-                      onChange={(e) => handleInputChange('comingSoon', 'subheading', e.target.value)}
-                      placeholder="Enter your subheading"
-                      className="textarea textarea-bordered h-24 text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Launch Date</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={pageData.comingSoon.launchDate}
-                      onChange={(e) => handleInputChange('comingSoon', 'launchDate', e.target.value)}
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Email Placeholder</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.comingSoon.emailPlaceholder}
-                      onChange={(e) => handleInputChange('comingSoon', 'emailPlaceholder', e.target.value)}
-                      placeholder="Email field placeholder"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Button Text</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.comingSoon.buttonText}
-                      onChange={(e) => handleInputChange('comingSoon', 'buttonText', e.target.value)}
-                      placeholder="Enter button text"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text text-base-content">Success Message</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={pageData.comingSoon.successMessage}
-                      onChange={(e) => handleInputChange('comingSoon', 'successMessage', e.target.value)}
-                      placeholder="Message shown after successful signup"
-                      className="input input-bordered text-base-content bg-base-100"
-                    />
-                  </div>
-
-                  {/* Image Upload Section */}
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">Brand Image</span>
-                    </label>
-                    <div className="space-y-4">
-                      {pageData?.comingSoon?.image?.data ? (
-                        <div className="space-y-4">
-                          <div className="relative aspect-video rounded-lg overflow-hidden bg-base-200">
-                            <img
-                              src={pageData?.comingSoon?.image?.data}
-                              alt="Preview"
-                              className="object-contain w-full h-full"
-                            />
-                            <button
-                              onClick={() => removeImage('comingSoon')}
-                              className="absolute top-2 right-2 btn btn-sm btn-circle btn-error"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="form-control">
-                              <label className="label">
-                                <span className="label-text">Alt Text</span>
-                              </label>
-                              <input
-                                type="text"
-                                value={pageData?.comingSoon?.image?.alt || ''}
-                                onChange={(e) => handleImageAltChange(e.target.value, 'comingSoon')}
-                                placeholder="Describe the image for accessibility"
-                                className="input input-bordered"
-                              />
-                            </div>
-                            <div className="form-control">
-                              <label className="label">
-                                <span className="label-text">Position</span>
-                              </label>
-                              <div className="join">
-                                <button
-                                  className={`join-item btn btn-sm ${pageData?.comingSoon?.image?.position === 'left' ? 'btn-primary' : 'btn-ghost'}`}
-                                  onClick={() => handleImagePositionChange('left', 'comingSoon')}
-                                >
-                                  Left
-                                </button>
-                                <button
-                                  className={`join-item btn btn-sm ${pageData?.comingSoon?.image?.position === 'right' ? 'btn-primary' : 'btn-ghost'}`}
-                                  onClick={() => handleImagePositionChange('right', 'comingSoon')}
-                                >
-                                  Right
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-4">
-                          <label className="w-full">
-                            <input
-                              type="file"
-                              accept="image/jpeg,image/png,image/webp"
-                              onChange={(e) => handleImageUpload(e, 'comingSoon')}
-                              className="hidden"
-                            />
-                            <div className="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
-                              <div className="mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                              </div>
-                              <p className="text-sm opacity-50">
-                                Click to upload image<br />
-                                <span className="text-xs">JPG, PNG, WebP (max 2MB)</span>
-                              </p>
-                            </div>
-                          </label>
-                        </div>
-                      )}
-                      {imageError && (
-                        <div className={`text-sm ${imageError.startsWith('Warning') ? 'text-warning' : 'text-error'}`}>
-                          {imageError}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
             )}
           </div>
         </div>
@@ -1258,17 +1283,21 @@ export default function Workspace() {
                         <p className={`mb-8 opacity-90 ${previewMode === 'mobile' ? 'text-lg' : 'text-xl'}`}>
                           {pageData.cta.subheading || 'Take the next step and join thousands of satisfied customers.'}
                         </p>
-                        {pageData.cta.buttonText && (
-                          <button
-                            className={`px-8 py-3 rounded-lg font-medium ${previewMode === 'mobile' ? 'w-full max-w-xs' : ''}`}
-                            style={{
-                              backgroundColor: pageData.styles.colors.background,
-                              color: pageData.styles.colors.primary
-                            }}
-                          >
-                            {pageData.cta.buttonText}
-                          </button>
-                        )}
+                        <div
+                          className="rounded-lg shadow-lg p-6"
+                          style={{ backgroundColor: pageData.styles.colors.accent }}
+                        >
+                          {pageData.form.enabled && pageData.form.embedCode ? (
+                            <div 
+                              className="form-container"
+                              dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                            />
+                          ) : (
+                            <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                              <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </section>
@@ -1292,35 +1321,16 @@ export default function Workspace() {
                         className="rounded-lg shadow-lg p-6 mt-8"
                         style={{ backgroundColor: pageData.styles.colors.accent }}
                       >
-                        <div className="space-y-4">
-                          <input
-                            type="text"
-                            placeholder={pageData.signup.namePlaceholder}
-                            className="w-full px-4 py-2 rounded-lg border"
-                            style={{
-                              backgroundColor: pageData.styles.colors.background,
-                              borderColor: `${pageData.styles.colors.primary}20`
-                            }}
+                        {pageData.form.enabled && pageData.form.embedCode ? (
+                          <div 
+                            className="form-container"
+                            dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
                           />
-                          <input
-                            type="email"
-                            placeholder={pageData.signup.emailPlaceholder}
-                            className="w-full px-4 py-2 rounded-lg border"
-                            style={{
-                              backgroundColor: pageData.styles.colors.background,
-                              borderColor: `${pageData.styles.colors.primary}20`
-                            }}
-                          />
-                          <button
-                            className="w-full px-8 py-3 rounded-lg font-medium"
-                            style={{
-                              backgroundColor: pageData.styles.colors.primary,
-                              color: pageData.styles.colors.background
-                            }}
-                          >
-                            {pageData.signup.buttonText || 'Sign Up'}
-                          </button>
-                        </div>
+                        ) : (
+                          <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                            <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {pageData?.signup?.image?.data && (
@@ -1364,25 +1374,20 @@ export default function Workspace() {
                         )}
 
                         <div className={`max-w-md ${previewMode === 'mobile' ? 'mx-auto' : 'md:mx-0'}`}>
-                          <div className="flex">
-                            <input
-                              type="email"
-                              placeholder={pageData.comingSoon.emailPlaceholder}
-                              className="flex-1 px-4 py-2 rounded-l-lg border"
-                              style={{
-                                backgroundColor: pageData.styles.colors.background,
-                                borderColor: `${pageData.styles.colors.primary}20`
-                              }}
-                            />
-                            <button
-                              className="px-8 py-3 rounded-r-lg font-medium"
-                              style={{
-                                backgroundColor: pageData.styles.colors.primary,
-                                color: pageData.styles.colors.background
-                              }}
-                            >
-                              {pageData.comingSoon.buttonText}
-                            </button>
+                          <div
+                            className="rounded-lg shadow-lg p-6"
+                            style={{ backgroundColor: pageData.styles.colors.accent }}
+                          >
+                            {pageData.form.enabled && pageData.form.embedCode ? (
+                              <div 
+                                className="form-container"
+                                dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                              />
+                            ) : (
+                              <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                                <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
