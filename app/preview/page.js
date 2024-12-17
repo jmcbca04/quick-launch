@@ -3,6 +3,12 @@
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
+const TEMPLATES = {
+  FULL_LANDING: 'Full Landing Page',
+  SIGNUP_FOCUS: 'Sign-up Focus',
+  COMING_SOON: 'Coming Soon'
+};
+
 function PreviewContent() {
   const searchParams = useSearchParams();
   const [pageData, setPageData] = useState(null);
@@ -46,7 +52,31 @@ function PreviewContent() {
 
   return (
     <div style={getPreviewStyle()}>
-      {pageData.template === 'Full Landing Page' && (
+      <style jsx global>{`
+        .form-container {
+          width: 100%;
+          min-height: 400px;
+          background: transparent;
+          border-radius: 0.5rem;
+          overflow: hidden;
+        }
+        .form-container iframe {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 400px;
+          border: none !important;
+          background: transparent;
+        }
+        /* Adjust container padding based on template */
+        .form-container-accent {
+          background-color: var(--accent);
+          padding: 2rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+      `}</style>
+
+      {pageData.template === TEMPLATES.FULL_LANDING && (
         <>
           {/* Hero Section */}
           <section className="min-h-[80vh] flex flex-col items-center justify-center px-4">
@@ -175,24 +205,25 @@ function PreviewContent() {
                 <p className="mb-8 opacity-90 text-xl">
                   {pageData.cta.subheading || 'Take the next step and join thousands of satisfied customers.'}
                 </p>
-                {pageData.cta.buttonText && (
-                  <button
-                    className="px-8 py-3 rounded-lg font-medium"
-                    style={{
-                      backgroundColor: pageData.styles.colors.background,
-                      color: pageData.styles.colors.primary
-                    }}
-                  >
-                    {pageData.cta.buttonText}
-                  </button>
-                )}
+                <div className="form-container-accent">
+                  {pageData.form.enabled && pageData.form.embedCode ? (
+                    <div 
+                      className="form-container"
+                      dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                    />
+                  ) : (
+                    <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                      <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </section>
         </>
       )}
 
-      {pageData.template === 'Sign-up Focus' && (
+      {pageData.template === TEMPLATES.SIGNUP_FOCUS && (
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className={pageData?.signup?.image?.position === 'right' ? 'order-1 md:order-1' : 'order-2 md:order-2'}>
@@ -209,34 +240,17 @@ function PreviewContent() {
                 className="rounded-lg shadow-lg p-6 mt-8"
                 style={{ backgroundColor: pageData.styles.colors.accent }}
               >
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder={pageData.signup.namePlaceholder}
-                    className="w-full px-4 py-2 rounded-lg border"
-                    style={{
-                      backgroundColor: pageData.styles.colors.background,
-                      borderColor: `${pageData.styles.colors.primary}20`
-                    }}
-                  />
-                  <input
-                    type="email"
-                    placeholder={pageData.signup.emailPlaceholder}
-                    className="w-full px-4 py-2 rounded-lg border"
-                    style={{
-                      backgroundColor: pageData.styles.colors.background,
-                      borderColor: `${pageData.styles.colors.primary}20`
-                    }}
-                  />
-                  <button
-                    className="w-full px-8 py-3 rounded-lg font-medium"
-                    style={{
-                      backgroundColor: pageData.styles.colors.primary,
-                      color: pageData.styles.colors.background
-                    }}
-                  >
-                    {pageData.signup.buttonText || 'Sign Up'}
-                  </button>
+                <div className="form-container-accent">
+                  {pageData.form.enabled && pageData.form.embedCode ? (
+                    <div 
+                      className="form-container"
+                      dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                    />
+                  ) : (
+                    <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                      <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -255,7 +269,7 @@ function PreviewContent() {
         </div>
       )}
 
-      {pageData.template === 'Coming Soon' && (
+      {pageData.template === TEMPLATES.COMING_SOON && (
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className={pageData?.comingSoon?.image?.position === 'right' ? 'order-1 md:order-1' : 'order-2 md:order-2'}>
@@ -281,25 +295,17 @@ function PreviewContent() {
                 )}
 
                 <div className="max-w-md mx-auto md:mx-0">
-                  <div className="flex">
-                    <input
-                      type="email"
-                      placeholder={pageData.comingSoon.emailPlaceholder}
-                      className="flex-1 px-4 py-2 rounded-l-lg border"
-                      style={{
-                        backgroundColor: pageData.styles.colors.background,
-                        borderColor: `${pageData.styles.colors.primary}20`
-                      }}
-                    />
-                    <button
-                      className="px-8 py-3 rounded-r-lg font-medium"
-                      style={{
-                        backgroundColor: pageData.styles.colors.primary,
-                        color: pageData.styles.colors.background
-                      }}
-                    >
-                      {pageData.comingSoon.buttonText}
-                    </button>
+                  <div className="form-container-accent">
+                    {pageData.form.enabled && pageData.form.embedCode ? (
+                      <div 
+                        className="form-container"
+                        dangerouslySetInnerHTML={{ __html: pageData.form.embedCode }}
+                      />
+                    ) : (
+                      <div className="text-center p-4 border-2 border-dashed border-base-300 rounded-lg">
+                        <p className="text-base-content/60">Enable form settings and add your Google Form embed code to display the form here.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

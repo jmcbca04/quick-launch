@@ -14,6 +14,12 @@ const DEFAULT_STATE = {
       accent: '#f5f5f5'
     }
   },
+  form: {
+    enabled: false,
+    embedCode: '',
+    title: 'Contact Us',
+    description: 'Fill out this form to get in touch.',
+  },
   hero: {
     headline: '',
     subheading: '',
@@ -247,6 +253,22 @@ export default function MainLayout({ children }) {
             height: 100%;
             object-fit: cover;
         }
+
+        /* Form styles */
+        .form-container {
+            width: 100%;
+            min-height: 400px;
+            background: transparent;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .form-container iframe {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 400px;
+            border: none !important;
+            background: transparent;
+        }
     </style>
 </head>
 <body>
@@ -375,6 +397,24 @@ export default function MainLayout({ children }) {
                 <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 2rem;">
                     ${compressedPageData?.cta?.subheading || 'Take the next step and join thousands of satisfied customers.'}
                 </p>
+                <div style="
+                    background-color: ${compressedPageData?.styles?.colors?.accent};
+                    padding: 2rem;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                ">
+                    ${compressedPageData?.form?.enabled && compressedPageData?.form?.embedCode ? `
+                        <div style="
+                            width: 100%;
+                            min-height: 400px;
+                            background: transparent;
+                            border-radius: 0.5rem;
+                            overflow: hidden;
+                        ">
+                            ${compressedPageData.form.embedCode}
+                        </div>
+                    ` : ''}
+                </div>
                 ${compressedPageData?.cta?.buttonText ? `
                 <button style="
                     background-color: ${compressedPageData?.styles?.colors?.background};
@@ -418,6 +458,17 @@ export default function MainLayout({ children }) {
                     border-radius: 0.5rem;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
                 ">
+                    ${compressedPageData?.form?.enabled && compressedPageData?.form?.embedCode ? `
+                        <div style="
+                            width: 100%;
+                            min-height: 400px;
+                            background: transparent;
+                            border-radius: 0.5rem;
+                            overflow: hidden;
+                        ">
+                            ${compressedPageData.form.embedCode}
+                        </div>
+                    ` : `
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <input 
                             type="text" 
@@ -457,6 +508,7 @@ export default function MainLayout({ children }) {
                             ${compressedPageData?.signup?.buttonText || 'Sign Up'}
                         </button>
                     </div>
+                    `}
                 </div>
             </div>
             ${compressedPageData?.signup?.image?.data ? `
@@ -504,6 +556,17 @@ export default function MainLayout({ children }) {
                     ` : ''}
                     
                     <div style="max-width: 28rem;">
+                        ${compressedPageData?.form?.enabled && compressedPageData?.form?.embedCode ? `
+                            <div style="
+                                width: 100%;
+                                min-height: 400px;
+                                background: transparent;
+                                border-radius: 0.5rem;
+                                overflow: hidden;
+                            ">
+                                ${compressedPageData.form.embedCode}
+                            </div>
+                        ` : `
                         <div style="display: flex;">
                             <input 
                                 type="email" 
@@ -533,6 +596,7 @@ export default function MainLayout({ children }) {
                                 ${compressedPageData?.comingSoon?.buttonText}
                             </button>
                         </div>
+                        `}
                     </div>
                 </div>
             </div>
